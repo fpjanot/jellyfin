@@ -22,7 +22,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release --output ./publish_output
+        run: dotnet publish ./Jellyfin.Server/Jellyfin.Server.csproj -c Release --output ./publish_output
 
       - name: List files after publish
         run: ls -R ./
@@ -54,3 +54,4 @@ jobs:
           slot-name: 'Production'
           package: ./publish_output
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+
