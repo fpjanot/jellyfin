@@ -19,7 +19,7 @@ jobs:
     - name: Set up .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '8.x'
+        dotnet-version: '5.0.x'
 
     - name: Restore dependencies
       run: dotnet restore
@@ -33,16 +33,25 @@ jobs:
     - name: Publish build artifacts
       run: dotnet publish --configuration Release --output ./output
 
-    - name: Build Docker Image
-      run: docker build -t jellyfin-app:latest .
-
-    - name: Login to Azure
-      uses: azure/login@v1
+    # Login to Docker Hub
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
       with:
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Push and Deploy to Azure Web App
+    # Build the Docker image
+    - name: Build Docker Image
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/jellyfin-app:latest .
+
+    # Push the Docker image to Docker Hub
+    - name: Push Docker Image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/jellyfin-app:latest
+
+    # Deploy to Azure Web App
+    - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'jellyfin-app'
-        images: 'jellyfin-app:latest'
+        app-name: 'NOME_DO_SEU_WEB_APP'
+        images: '${{ secrets.DOCKER_USERNAME }}/jellyfin-app:latest'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
