@@ -41,12 +41,6 @@ jobs:
     - name: Publish the project
       run: dotnet publish --configuration Release --output ./publish_output
 
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v4
-      with:
-        name: .net-app
-        path: ${{env.DOTNET_ROOT}}/myapp
-
     # 7. Deploy para o Azure Web App
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
