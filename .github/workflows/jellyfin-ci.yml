@@ -1,34 +1,51 @@
-name: My Jellyfin CI/CD Pipeline
+name: Jellyfin CI/CD Pipeline
 
 on:
   push:
     branches:
       - master
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+    # 1. Checkout do código
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
+    # 2. Configurar .NET Core
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'  # Atualize para 8.0.x conforme necessário
+    - name: Build with dotnet
+      run: dotnet build --configuration Release
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+    # 3. Restaurar dependências
+    - name: Restore dependencies
+      run: dotnet restore
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+    # 4. Compilar o projeto
+    - name: Build the project
+      run: dotnet build --no-restore --configuration Release
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+    # 5. Executar testes
+    - name: Run tests
+      run: dotnet test --no-restore --verbosity normal
+
+    # 6. Publicar o aplicativo  
+    - name: Publish the project
+      run: dotnet publish --configuration Release --output ./publish_output
+
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v4
+      with:
+        name: .net-app
+        path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
     runs-on: ubuntu-latest
@@ -42,11 +59,10 @@ jobs:
         with:
           name: .net-app
       
+    # 7. Deploy para o Azure Web App
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v2
         with:
-          app-name: 'jellyfin-app'
-          slot-name: 'Production'
-          package: .
-          publish-profile: ${{ secrets.MY_AZURE_PUBLISH_PROFILE }}
+          app-name: 'jellyfin-app'  # Substitua pelo nome da sua Web App no Azure
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publish_output  # Caminho para os artefatos do build
