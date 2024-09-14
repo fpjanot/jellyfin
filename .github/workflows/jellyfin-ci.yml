@@ -21,32 +21,28 @@ jobs:
     - name: Set up .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '8.0.x'  # Certifique-se de que está usando a versão correta do .NET, conforme o README
 
     # 3. Restaurar dependências
     - name: Restore dependencies
-      run: dotnet restore ./fuzz/Jellyfin.Api.Fuzz/Jellyfin.Api.Fuzz.csproj
+      run: dotnet restore ./Jellyfin.Server/Jellyfin.Server.csproj
 
-    # 4. Compilar o projeto Jellyfin.Api
-    - name: Build Jellyfin.Api
-      run: dotnet build ./Jellyfin.Api/Jellyfin.Api.csproj --configuration Release
-
-    # 5. Compilar o projeto Jellyfin.Api.Fuzz
+    # 4. Compilar o projeto Jellyfin.Server
     - name: Build the project
-      run: dotnet build ./fuzz/Jellyfin.Api.Fuzz/Jellyfin.Api.Fuzz.csproj --no-restore --configuration Release
+      run: dotnet build ./Jellyfin.Server/Jellyfin.Server.csproj --configuration Release
 
-    # 6. Publicar o aplicativo
+    # 5. Publicar o aplicativo
     - name: Publish the project
-      run: dotnet publish ./fuzz/Jellyfin.Api.Fuzz/Jellyfin.Api.Fuzz.csproj --configuration Release --output ./publish_output
+      run: dotnet publish ./Jellyfin.Server/Jellyfin.Server.csproj --configuration Release --output ./publish_output
 
-    # 7. Verificar conteúdo da pasta após publicação
+    # 6. Verificar conteúdo da pasta após publicação
     - name: List published files
       run: ls -R ./publish_output
 
-    # 8. Deploy para o Azure Web App
+    # 7. Deploy para o Azure Web App
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'jellyfin-app'
+        app-name: 'jellyfin-app'  # Substitua pelo nome da sua Web App no Azure
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         package: ./publish_output
