@@ -46,7 +46,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'my-jellyfin-app'
+          app-name: 'jellyfin-app'
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.MY_AZURE_PUBLISH_PROFILE }}
