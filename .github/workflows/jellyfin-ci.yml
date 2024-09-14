@@ -25,11 +25,11 @@ jobs:
 
     # 3. Restaurar dependências
     - name: Restore dependencies
-      run: dotnet restore ./Emby.Server.Implementations/Emby.Server.Implementations.csproj
+      run: dotnet restore ./fuzz/Jellyfin.Api.Fuzz/Program.cs
 
     # 4. Compilar o projeto
     - name: Build the project
-      run: dotnet build ./Emby.Server.Implementations/Emby.Server.Implementations.csproj --no-restore --configuration Release
+      run: dotnet build ./fuzz/Jellyfin.Api.Fuzz/Program.cs --no-restore --configuration Release
 
     # 5. Executar testes
     - name: Run tests
@@ -37,7 +37,7 @@ jobs:
 
     # 6. Publicar o aplicativo
     - name: Publish the project
-      run: dotnet publish ./Emby.Server.Implementations/Emby.Server.Implementations.csproj --configuration Release --output ./publish_output
+      run: dotnet publish ./fuzz/Jellyfin.Api.Fuzz/Program.cs --configuration Release --output ./publish_output
 
     # 7. Verificar conteúdo da pasta após publicação
     - name: List published files
