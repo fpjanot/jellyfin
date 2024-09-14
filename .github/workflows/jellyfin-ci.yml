@@ -37,12 +37,16 @@ jobs:
 
     # 6. Publicar o aplicativo
     - name: Publish the project
-      run: dotnet publish ./Jellyfin.Server.Implementations/Jellyfin.Server.Implementations.csproj --configuration Release
+      run: dotnet publish ./Jellyfin.Server.Implementations/Jellyfin.Server.Implementations.csproj --configuration Release --output ./publish_output
 
-    # 7. Deploy para o Azure Web App
+    # 7. Verificar conteúdo da pasta após publicação
+    - name: List published files
+      run: ls -R ./publish_output
+
+    # 8. Deploy para o Azure Web App
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'jellyfin-app'  # Substitua pelo nome da sua Web App no Azure
+        app-name: 'jellyfin-app'
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ./Jellyfin.Server.Implementations/bin/Release/net8.0/publish/
+        package: ./publish_output
