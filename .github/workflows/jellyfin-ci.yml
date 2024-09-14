@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Jellyfin-app
 
 on:
@@ -52,6 +49,5 @@ jobs:
         with:
           app-name: 'jellyfin-app'
           slot-name: 'Production'
-          package: ./publish_output  # Caminho para os artefatos do build
+          package: ${{env.DOTNET_ROOT}}/myapp
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-  
