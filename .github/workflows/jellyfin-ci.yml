@@ -21,15 +21,15 @@ jobs:
     - name: Set up .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '8.0.x'  # Atualize para 8.0.x conforme necessário
+        dotnet-version: '8.0.x'  # Ajuste a versão conforme o seu projeto
 
     # 3. Restaurar dependências
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore Jellyfin/Emby.Server.Implementations/Emby.Server.Implementations.csproj
 
     # 4. Compilar o projeto
     - name: Build the project
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build Jellyfin/Emby.Server.Implementations/Emby.Server.Implementations.csproj --no-restore --configuration Release
 
     # 5. Executar testes
     - name: Run tests
@@ -37,7 +37,7 @@ jobs:
 
     # 6. Publicar o aplicativo
     - name: Publish the project
-      run: dotnet publish --configuration Release --output ./publish_output
+      run: dotnet publish Jellyfin/Emby.Server.Implementations/Emby.Server.Implementations.csproj --configuration Release --output ./publish_output
 
     # 7. Deploy para o Azure Web App
     - name: Deploy to Azure Web App
@@ -45,4 +45,4 @@ jobs:
       with:
         app-name: 'jellyfin-app'  # Substitua pelo nome da sua Web App no Azure
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ./publish_output  # Caminho para os artefatos do build
+        package: ./publish_output
