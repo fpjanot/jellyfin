@@ -15,6 +15,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    # Construir o web client a partir do código-fonte
+    - name: Build Web Client from Source
+      run: |
+        # Clonar o repositório
+        git clone https://github.com/jellyfin/jellyfin-web.git
+        cd jellyfin-web
+        # Instalar dependências (necessita Node.js e npm)
+        npm install
+        # Construir os arquivos do web client
+        npm run build
+        # Copiar os arquivos para a pasta de saída desejada
+        mkdir -p ../jellyfin-web-dist
+        cp -r dist/* ../jellyfin-web-dist
+
     # Configurar .NET Core
     - name: Set up .NET Core
       uses: actions/setup-dotnet@v1
@@ -49,7 +63,7 @@ jobs:
 
     # Build do projeto e publicação
     - name: Build and publish
-      run: dotnet publish -c Release -o ./publish
+      run: dotnet publish -c Release -o ./publish_output
 
     # Finalizar a análise do SonarCloud
     - name: SonarCloud Scan - End
