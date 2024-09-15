@@ -1,9 +1,13 @@
-# Imagem do runtime ASP.NET
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Copiar os arquivos de build para a imagem final
-COPY ./publish ./
+# Limpar o diretório /app para evitar conflitos
+RUN rm -rf /app/*
 
-# Definir o ponto de entrada da aplicação
+# Copiar os arquivos para o diretório /app
+COPY ./publish_output ./
+
+# Definir o ponto de entrada
 ENTRYPOINT ["dotnet", "jellyfin.dll"]
+
+EXPOSE 80
