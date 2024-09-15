@@ -12,16 +12,19 @@ jobs:
 
     steps:
     # Checkout do código do repositório
+    # Esta etapa faz o checkout do código-fonte do repositório para o ambiente de execução do GitHub Actions.
     - name: Checkout code
       uses: actions/checkout@v2
 
     # Configurar .NET Core
+    # Esta etapa configura o ambiente .NET Core 8.0 para garantir que o build e os testes sejam executados corretamente.
     - name: Set up .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '8.0.x'
 
     # Instalar Java 17
+    # SonarScanner requer Java para realizar a análise de código, então esta etapa instala a versão 17 do Java.
     - name: Set up Java 17
       uses: actions/setup-java@v3
       with:
@@ -29,26 +32,36 @@ jobs:
         distribution: 'temurin'
 
     # Instalar SonarScanner
+    # Instala o SonarScanner, uma ferramenta usada para análise de qualidade do código.
     - name: Install SonarScanner
       run: dotnet tool install --global dotnet-sonarscanner
 
     # Iniciar a análise do SonarCloud
+    # Esta etapa inicia a análise do código pelo SonarCloud, passando as credenciais do projeto.
     - name: SonarCloud Scan - Begin
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT_KEY }}" /o:"${{ secrets.SONAR_ORGANIZATION }}"
+        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT_KEY }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     # Restaurar dependências
+    # Esta etapa executa o comando 'dotnet restore' para baixar todas as dependências do projeto, preparando-o para o build.
     - name: Restore dependencies
       run: dotnet restore
 
     # Executar testes automatizados
+    # Esta etapa executa os testes automatizados usando o comando 'dotnet test'.
     - name: Run tests
       run: dotnet test --no-restore --verbosity normal
 
     # Build do projeto para análise
+    # Esta etapa compila o projeto para verificar a existência de possíveis erros de build.
     - name: Build project
       run: dotnet build
 
     # Finalizar a análise do SonarCloud
+    # Esta etapa finaliza a análise do SonarCloud, gerando os relatórios de qualidade do código.
     - name: SonarCloud Scan - End
-      run: dotnet-sonarscanner end
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
