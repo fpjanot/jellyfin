@@ -7,3 +7,5 @@ COPY ./publish ./
 
 # Definir o ponto de entrada da aplicação
 ENTRYPOINT ["dotnet", "jellyfin"]
+
+EXPOSE 80
