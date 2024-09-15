@@ -15,27 +15,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Configurar Node.js para construir o web client
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20.x'
-
-    # Construir o web client a partir do código-fonte
-    - name: Build Web Client from Source
-      run: |
-        # Clonar o repositório
-        git clone https://github.com/jellyfin/jellyfin-web.git
-        cd jellyfin-web
-        # Instalar dependências (necessita Node.js e npm)
-        npm install
-        npm start
-        # Construir os arquivos do web client
-        npm run build:development
-        # Copiar os arquivos para a pasta de saída desejada
-        mkdir -p ../jellyfin-web-dist
-        cp -r dist/* ../jellyfin-web-dist
-
     # Configurar .NET Core
     - name: Set up .NET Core
       uses: actions/setup-dotnet@v1
@@ -85,7 +64,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # Build da imagem Docker
+    # Build da imagem Docker (construindo o web client dentro do container)
     - name: Build Docker Image
       run: docker build -t ${{ secrets.DOCKER_USERNAME }}/jellyfin-app:latest .
 

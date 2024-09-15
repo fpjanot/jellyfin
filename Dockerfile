@@ -1,22 +1,21 @@
-# Etapa de build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM node:20-alpine AS build
+
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Copiar os arquivos do projeto e do web client
-COPY . .
-COPY ./jellyfin-web-dist ./jellyfin-web
+# Clona o repositório e instala dependências
+RUN git clone https://github.com/jellyfin/jellyfin-web.git . && \
+    npm install && \
+    npm run build:development
 
-# Restaurar e construir a aplicação
-RUN dotnet restore
-RUN dotnet publish -c Release -o ./publish
+# Usa uma imagem mais leve para servir o aplicativo
+FROM nginx:alpine
 
-# Etapa de runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
-WORKDIR /app
+# Copia os arquivos construídos para o diretório de publicação
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copiar os arquivos publicados e o web client
-COPY --from=build /app/publish .
-COPY --from=build /app/jellyfin-web ./jellyfin-web
+# Expor a porta 80 para acessar o serviço
+EXPOSE 80
 
-# Comando para iniciar a aplicação
-CMD ["dotnet", "Jellyfin.Server.dll", "--webdir", "/app/jellyfin-web"]
+# Inicia o servidor Nginx
+CMD ["nginx", "-g", "daemon off;"]
