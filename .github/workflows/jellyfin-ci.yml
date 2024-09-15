@@ -49,6 +49,10 @@ jobs:
     - name: Build project
       run: dotnet build
 
+    # Build do projeto e publicação
+    - name: Build and publish
+      run: dotnet publish -c Release -o ./publish
+
     # Finalizar a análise do SonarCloud
     - name: SonarCloud Scan - End
       run: dotnet-sonarscanner end

@@ -1,17 +1,9 @@
-# Etapa de build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Imagem do runtime ASP.NET
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Copia os arquivos do projeto e restaura as dependências
-COPY ./*.sln ./
-COPY ./src/ ./src/
-RUN dotnet restore
+# Copiar os arquivos de build para a imagem final
+COPY ./publish ./
 
-# Build do projeto
-RUN dotnet publish -c Release -o /app/publish
-
-# Etapa de runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
-WORKDIR /app
-COPY --from=build /app/publish .
+# Definir o ponto de entrada da aplicação
 ENTRYPOINT ["dotnet", "jellyfin"]
