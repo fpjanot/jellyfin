@@ -15,12 +15,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Baixar arquivos do web client pré-compilados
-    - name: Download Web Client
+    # Configurar Node.js para construir o web client
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.x'
+
+    # Construir o web client a partir do código-fonte
+    - name: Build Web Client from Source
       run: |
-        mkdir -p ./jellyfin-web-dist
-        curl -L https://link-para-arquivos-precompilados.zip -o jellyfin-web.zip
-        unzip jellyfin-web.zip -d ./jellyfin-web-dist
+        # Clonar o repositório
+        git clone https://github.com/jellyfin/jellyfin-web.git
+        cd jellyfin-web
+        # Instalar dependências (necessita Node.js e npm)
+        npm install
+        npm start
+        # Construir os arquivos do web client
+        npm run build:development
+        # Copiar os arquivos para a pasta de saída desejada
+        mkdir -p ../jellyfin-web-dist
+        cp -r dist/* ../jellyfin-web-dist
 
     # Configurar .NET Core
     - name: Set up .NET Core
