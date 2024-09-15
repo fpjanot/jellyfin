@@ -21,21 +21,25 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
+    # Adicionar etapas do CodeQL
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3.26.7
+      with:
+        languages: 'csharp'
+        queries: +security-extended
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3.26.7
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3.26.7
+
     # Instalar Java 17
     - name: Set up Java 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
-
-    # Instalar SonarScanner
-    - name: Install SonarScanner
-      run: dotnet tool install --global dotnet-sonarscanner
-
-    # Iniciar a análise do SonarCloud
-    - name: SonarCloud Scan - Begin
-      run: |
-        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT_KEY }}" /o:"${{ secrets.SONAR_ORGANIZATION }}"
 
     # Restaurar dependências
     - name: Restore dependencies
@@ -48,10 +52,6 @@ jobs:
     # Build do projeto para análise
     - name: Build project
       run: dotnet build
-
-    # Finalizar a análise do SonarCloud
-    - name: SonarCloud Scan - End
-      run: dotnet-sonarscanner end
 
     # Login no Docker Hub
     - name: Login to Docker Hub
