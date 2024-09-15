@@ -1,9 +1,12 @@
 FROM node:20-alpine AS build
 
+# Instalar o Git
+RUN apk add --no-cache git
+
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Clona o repositório e instala dependências
+# Clonar o repositório e instalar dependências
 RUN git clone https://github.com/jellyfin/jellyfin-web.git . && \
     npm install && \
     npm run build:development
