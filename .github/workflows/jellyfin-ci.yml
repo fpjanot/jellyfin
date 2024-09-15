@@ -34,10 +34,10 @@ jobs:
 
     # Iniciar a análise do SonarCloud
     - name: SonarCloud Scan - Begin
-     env:
-       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-     run: |
-       dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT_KEY }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT_KEY }}" /o:"${{ secrets.SONAR_ORGANIZATION }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     # Restaurar dependências
     - name: Restore dependencies
@@ -45,7 +45,7 @@ jobs:
 
     # Executar testes automatizados
     - name: Run tests
-     run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal
 
     # Build do projeto e publicação
     - name: Build and publish
@@ -53,9 +53,9 @@ jobs:
 
     # Finalizar a análise do SonarCloud
     - name: SonarCloud Scan - End
-     env:
-       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-     run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     # Login no Docker Hub
     - name: Login to Docker Hub
